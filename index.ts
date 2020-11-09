@@ -60,7 +60,7 @@ const messageHandler = (rcon:Rcon) => async (msg:Message) => {
 async function main() {
 	setupEnvVars()
 
-	const rcon = await Rcon.connect({host: "localhost", password: "ieat711gyoza$$$"});
+	const rcon = await Rcon.connect({host: env.HOSTNAME, password: env.RCON_PASSWORD});
 
 	const client = new Client()
 
