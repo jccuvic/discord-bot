@@ -1,6 +1,8 @@
 import { Rcon } from 'rcon-client/lib';
 import { Client, Message } from 'discord.js';
 import { env } from 'process';
+import * as http from 'http';
+
 // const Database = require("better-sqlite3");
 
 // const db = new Database("verified.db", {verbose: console.log})
@@ -59,6 +61,11 @@ const messageHandler = (rcon: Rcon) => async (msg: Message) => {
     }
 };
 
+const server = http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end('OK');
+});
+
 async function main() {
     setupEnvVars();
 
@@ -76,6 +83,7 @@ async function main() {
     client.on('message', messageHandler(rcon));
 
     client.login(env.BOT_TOKEN);
+    server.listen();
 }
 
 main();
