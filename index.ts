@@ -83,7 +83,7 @@ async function main() {
     client.on('message', messageHandler(rcon));
 
     client.login(env.BOT_TOKEN);
-    server.listen();
+    server.listen(5000);
 }
 
 main();
