@@ -1,20 +1,21 @@
 {
-  "name": "jcc-bot",
-  "version": "1.0.0",
-  "description": "A Discord bot for the JCC Minecraft server.",
-  "main": "index.ts",
-  "scripts": {
-    "start": "ts-node index.ts"
-  },
-  "author": "Malcolm Seyd",
-  "license": "GPL",
-  "devDependencies": {
-    "@types/node": "^14.14.2",
-    "typescript": "^4.0.5"
-  },
-  "dependencies": {
-    "discord.js": "^12.4.1",
-    "rcon-client": "^4.2.3",
-    "ts-node": "^9.0.0"
-  }
+    "name": "jcc-bot",
+    "version": "1.0.0",
+    "description": "A Discord bot for the JCC Minecraft server.",
+    "main": "index.ts",
+    "scripts": {
+        "start": "ts-node index.ts"
+    },
+    "author": "Malcolm Seyd",
+    "license": "GPL",
+    "devDependencies": {
+        "@types/node": "^14.14.2",
+        "prettier": "^2.1.2",
+        "typescript": "^4.0.5"
+    },
+    "dependencies": {
+        "discord.js": "^12.4.1",
+        "rcon-client": "^4.2.3",
+        "ts-node": "^9.0.0"
+    }
 }

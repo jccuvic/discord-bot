@@ -1,22 +1,22 @@
 name: deployment
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: Setup Agent
-      uses: webfactory/ssh-agent@v0.4.1
-      with:
-          ssh-private-key: ${{ secrets.SSH_PRIV_KEY }}
-    - name: Setup Dokku remote
-      run: |
-        echo "Host main" >> ~/.ssh/config
-        echo "  Hostname ${{ secrets.DOKKU_HOST }}" >> ~/.ssh/config
-        echo "  Port ${{ secrets.DOKKU_PORT }}" >> ~/.ssh/config
-        git remote add dokku dokku@${{ secrets.DOKKU_HOST }}:jccuvic-discord-bot
-    - name: Deploy to Dokku
-      run: GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push -f dokku HEAD:master
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Setup Agent
+              uses: webfactory/ssh-agent@v0.4.1
+              with:
+                  ssh-private-key: ${{ secrets.SSH_PRIV_KEY }}
+            - name: Setup Dokku remote
+              run: |
+                  echo "Host main" >> ~/.ssh/config
+                  echo "  Hostname ${{ secrets.DOKKU_HOST }}" >> ~/.ssh/config
+                  echo "  Port ${{ secrets.DOKKU_PORT }}" >> ~/.ssh/config
+                  git remote add dokku dokku@${{ secrets.DOKKU_HOST }}:jccuvic-discord-bot
+            - name: Deploy to Dokku
+              run: GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push -f dokku HEAD:master
