@@ -1,0 +1,18 @@
+name: CD
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Dokku deploy
+      uses: vitalyliber/dokku-github-action@v6.0
+      env:
+        PRIVATE_KEY: ${{ secrets.SSH_PRIV_KEY }}
+        HOST: ${{ secrets.DOKKU_HOST }}
+        PORT: ${{ secrets.DOKKU_PORT }}
+        PROJECT: jccuvic-discord-bot
+        APP_CONFIG: ${{ secrets.APP_CONFIG }}
