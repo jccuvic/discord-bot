@@ -54,7 +54,10 @@ const messageHandler = (rcon: Rcon) => async (msg: Message) => {
 
     const command = msg.content.slice(env.CMD_PREFIX.length);
 
-    if (command == 'ping') {
+    if (command === 'config') {
+        const option = command.split(' ')![1];
+        msg.channel.send(`Please specify a config option: ${option}`);
+    } else if (command == 'ping') {
         msg.reply((await rcon.send('list')) + ':kurochan:');
     } else if (command.slice(0, 'whitelist'.length) == 'whitelist') {
         whitelistCmd(rcon, msg);
