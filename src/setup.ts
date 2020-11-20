@@ -5,6 +5,9 @@ const isProd = process.env.NODE_ENV === 'production';
 
 export const setupRedisConnection = (): Tedis => {
     console.info('Setting up Redis Connection');
+    if(isProd){
+        return new Tedis({host: process.env.REDIS_URL});
+    } 
     const tedis = new Tedis({
         port: 6379,
         host: isProd ? 'localhost' : 'localhost',
