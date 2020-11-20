@@ -1,7 +1,9 @@
 import { Rcon } from 'rcon-client/lib';
 import { Client, Message } from 'discord.js';
+
 import { env } from 'process';
 import * as http from 'http';
+import { setupDynamoConnection, setupRedisConnection } from './setup';
 
 // const Database = require("better-sqlite3");
 
@@ -70,6 +72,8 @@ const server = http.createServer((req, res) => {
 });
 
 async function main() {
+    setupDynamoConnection();
+    setupRedisConnection();
     setupEnvVars();
 
     const rcon = await Rcon.connect({

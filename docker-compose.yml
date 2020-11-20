@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  jcc-redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+  jcc-dynamodb:
+    image: "amazon/dynamodb-local:1.13.5"
+    ports:
+      - "8000:8000"
