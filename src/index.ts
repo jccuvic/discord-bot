@@ -1,39 +1,15 @@
 import { Rcon } from 'rcon-client/lib';
 import { Client, Message } from 'discord.js';
-
 import { env } from 'process';
 import * as http from 'http';
-import { setupDynamoConnection, setupRedisConnection } from './setup';
-
-// const Database = require("better-sqlite3");
-
-// const db = new Database("verified.db", {verbose: console.log})
-
-const setupEnvVars = () => {
-    if (!env.BOT_TOKEN) {
-        console.log('Error: BOT_TOKEN is a required environment variable');
-        process.exit(1);
-    }
-    if (!env.HOSTNAME) {
-        console.log('Error: HOSTNAME is a required environment variable');
-        process.exit(1);
-    }
-    if (!env.RCON_PASSWORD) {
-        console.log('Error: RCON_PASSWORD is a required environment variable');
-        process.exit(1);
-    }
-    if (!env.RCON_PORT) {
-        env.RCON_PORT = '25565';
-    } else {
-        // check if it's a number and it's whole
-        if (!Number(env.RCON_PORT) || Number(env.RCON_PORT) % 1 != 0) {
-            console.log('Error: RCON_PORT must be a whole number');
-        }
-    }
-    if (!env.CMD_PREFIX) {
-        env.CMD_PREFIX = '!';
-    }
-};
+import {
+    setupDynamoConnection,
+    setupRedisConnection,
+    setupEnvVars,
+} from './setup';
+import { Tedis } from 'tedis';
+import { DynamoDB } from 'aws-sdk';
+import * as arg from 'arg';
 
 const whitelistCmd = async (rcon: Rcon, msg: Message) => {
     const validator = RegExp('^[a-zA-Z0-9_]{3,20}$');
@@ -51,29 +27,46 @@ const whitelistCmd = async (rcon: Rcon, msg: Message) => {
 };
 
 // pass in RCON client before giving function to client.on
-const messageHandler = (rcon: Rcon) => async (msg: Message) => {
-    if (!msg.content.startsWith(env.CMD_PREFIX)) return;
+const messageRouter = (rcon: Rcon, redis: Tedis, dynamodb: DynamoDB) => async (
+    msg: Message
+) => {
+    if (msg.content.startsWith(env.CMD_PREFIX)) {
+        return commandRouter(rcon, redis, dynamodb);
+    }
+};
 
-    const command = msg.content.slice(env.CMD_PREFIX.length);
+const commandRouter = (rcon: Rcon, redis: Tedis, dynamodb: DynamoDB) => async (
+    msg: Message
+) => {
+    const args = arg(
+        {
+            '--key': String,
+        },
+        {
+            argv: msg.content.slice(env.CMD_PREFIX.length).split(/\s+/),
+            // stopAtPositional: true,
+        }
+    );
+    const cmd = args._[0] || '';
 
-    if (command === 'config') {
-        const option = command.split(' ')![1];
-        msg.channel.send(`Please specify a config option: ${option}`);
-    } else if (command == 'ping') {
-        msg.reply((await rcon.send('list')));
-    } else if (command.slice(0, 'whitelist'.length) == 'whitelist') {
+    if (cmd === 'config'){
+        msg.channel.send(`config didn't break!`);
+    } else if (cmd == 'ping') {
+        msg.reply(await rcon.send('list'));
+    } else if (cmd.slice(0, 'whitelist'.length) == 'whitelist') {
         whitelistCmd(rcon, msg);
     }
 };
 
+// For Dokku health checks
 const server = http.createServer((req, res) => {
     res.writeHead(200);
     res.end('OK');
 });
 
 async function main() {
-    setupDynamoConnection();
-    setupRedisConnection();
+    const db = setupDynamoConnection();
+    const redis = setupRedisConnection();
     setupEnvVars();
 
     const rcon = await Rcon.connect({
@@ -81,13 +74,16 @@ async function main() {
         password: env.RCON_PASSWORD,
     });
 
+    // db.putItem();
+    // redis.set()
+
     const client = new Client();
 
     client.on('ready', () => {
         console.log(`Logged in as ${client.user.tag}`);
     });
 
-    client.on('message', messageHandler(rcon));
+    client.on('message', messageRouter(rcon, redis, db));
 
     client.login(env.BOT_TOKEN);
     server.listen(5000);

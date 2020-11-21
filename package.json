@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@types/aws-sdk": "^2.7.0",
+        "arg": "^5.0.0",
         "aws-sdk": "^2.796.0",
         "discord.js": "^12.4.1",
         "rcon-client": "^4.2.3",

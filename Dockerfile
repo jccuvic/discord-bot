@@ -3,10 +3,10 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 COPY . .
-ENV BOT_TOKEN=
-ENV HOSTNAME=
-ENV RCON_PASSWORD=
-ENV RCON_PORT=
-ENV CMD_PREFIX=
+ENV BOT_TOKEN= \
+    HOSTNAME= \
+    RCON_PASSWORD= \
+    RCON_PORT= \
+    CMD_PREFIX=
 CMD ["npm", "start"]
 
