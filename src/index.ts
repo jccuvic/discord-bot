@@ -31,30 +31,24 @@ const messageRouter = (rcon: Rcon, redis: Tedis, dynamodb: DynamoDB) => async (
     msg: Message
 ) => {
     if (msg.content.startsWith(env.CMD_PREFIX)) {
-        return commandRouter(rcon, redis, dynamodb);
-    }
-};
+        const args = arg(
+            {
+                '--key': String,
+            },
+            {
+                argv: msg.content.slice(env.CMD_PREFIX.length).split(/\s+/),
+                // stopAtPositional: true,
+            }
+        );
+        const cmd = args._[0] || '';
 
-const commandRouter = (rcon: Rcon, redis: Tedis, dynamodb: DynamoDB) => async (
-    msg: Message
-) => {
-    const args = arg(
-        {
-            '--key': String,
-        },
-        {
-            argv: msg.content.slice(env.CMD_PREFIX.length).split(/\s+/),
-            // stopAtPositional: true,
+        if (cmd === 'config') {
+            msg.channel.send(`config didn't break!`);
+        } else if (cmd == 'ping') {
+            msg.reply(await rcon.send('list'));
+        } else if (cmd.slice(0, 'whitelist'.length) == 'whitelist') {
+            whitelistCmd(rcon, msg);
         }
-    );
-    const cmd = args._[0] || '';
-
-    if (cmd === 'config'){
-        msg.channel.send(`config didn't break!`);
-    } else if (cmd == 'ping') {
-        msg.reply(await rcon.send('list'));
-    } else if (cmd.slice(0, 'whitelist'.length) == 'whitelist') {
-        whitelistCmd(rcon, msg);
     }
 };
 
