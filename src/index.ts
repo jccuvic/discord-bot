@@ -43,6 +43,10 @@ const messageRouter = (rcon: Rcon, redis: Tedis, dynamodb: DynamoDB) => async (
         const cmd = args._[0] || '';
 
         if (cmd === 'config') {
+            if(args._[1] === 'name') {
+                const name = args._[2];
+                msg.member.setNickname(name);
+            }
             msg.channel.send(`config didn't break!`);
         } else if (cmd == 'ping') {
             msg.reply(await rcon.send('list'));
