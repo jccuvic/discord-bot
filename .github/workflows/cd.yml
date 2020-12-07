@@ -1,22 +1,27 @@
-name: deployment
+name: ci
+
 on:
     push:
-        branches:
-            - main
+        branches: [main]
 jobs:
-    build:
+    main:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v1
-            - name: Setup Agent
-              uses: webfactory/ssh-agent@v0.4.1
+            - name: Set up QEMU
+              uses: docker/setup-qemu-action@v1
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v1
+            - name: Login to DockerHub
+              uses: docker/login-action@v1
               with:
-                  ssh-private-key: ${{ secrets.SSH_PRIV_KEY }}
-            - name: Setup Dokku remote
-              run: |
-                  echo "Host main" >> ~/.ssh/config
-                  echo "  Hostname ${{ secrets.DOKKU_HOST }}" >> ~/.ssh/config
-                  echo "  Port ${{ secrets.DOKKU_PORT }}" >> ~/.ssh/config
-                  git remote add dokku dokku@${{ secrets.DOKKU_HOST }}:jccuvic-discord-bot
-            - name: Deploy to Dokku
-              run: GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push -f dokku HEAD:master
+                  registry: ghcr.io
+                  username: ${{ secrets.repository_owner }}
+                  password: ${{ secrets.CR_PAT }}
+            - name: Build and push
+              id: docker_build
+              uses: docker/build-push-action@v2
+              with:
+                  push: true
+                  tags: ${{ secrets.repository_owner }}/discordbot:latest
+            - name: Image digest
+              run: echo ${{ steps.docker_build.outputs.digest }}
