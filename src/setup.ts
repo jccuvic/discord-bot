@@ -8,7 +8,7 @@ export const setupRedisConnection = (): Tedis => {
     console.info('Setting up Redis Connection');
     if (isProd) {
         const { hostname, port, password } = new URL(
-            env.REDIS_URL
+            env.REDIS_URL || 'localhost'
         );
         return new Tedis({ host: hostname, port: +port, password: password });
     }
@@ -36,22 +36,23 @@ export const setupEnvVars = () => {
         console.log('Error: BOT_TOKEN is a required environment variable');
         process.exit(1);
     }
-    if (!env.HOSTNAME) {
-        console.log('Error: HOSTNAME is a required environment variable');
-        process.exit(1);
-    }
-    if (!env.RCON_PASSWORD) {
-        console.log('Error: RCON_PASSWORD is a required environment variable');
-        process.exit(1);
-    }
+    // if (!env.HOSTNAME) {
+    //     console.log('Error: HOSTNAME is a required environment variable');
+    //     process.exit(1);
+    // }
+    // if (!env.RCON_PASSWORD) {
+    //     console.log('Error: RCON_PASSWORD is a required environment variable');
+    //     process.exit(1);
+    // }
     if (!env.RCON_PORT) {
         env.RCON_PORT = '25565';
-    } else {
-        // check if it's a number and it's whole
-        if (!Number(env.RCON_PORT) || Number(env.RCON_PORT) % 1 != 0) {
-            console.log('Error: RCON_PORT must be a whole number');
-        }
     }
+    // else {
+    //     // check if it's a number and it's whole
+    //     if (!Number(env.RCON_PORT) || Number(env.RCON_PORT) % 1 != 0) {
+    //         console.log('Error: RCON_PORT must be a whole number');
+    //     }
+    // }
     if (!env.CMD_PREFIX) {
         env.CMD_PREFIX = '!';
     }
