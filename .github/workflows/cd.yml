@@ -19,9 +19,6 @@ jobs:
               id: docker_build
               uses: docker/build-push-action@v2
               with:
-                  context: .
-                  # file: ./Dockerfile
-                  platforms: linux/386,linux/amd64
                   push: true
                   tags: ghcr.io/${{ secrets.repository_owner }}/discordbot:latest
             - name: Image digest
